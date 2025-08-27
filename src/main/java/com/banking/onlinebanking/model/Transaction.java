@@ -1,8 +1,8 @@
 package com.banking.onlinebanking.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -11,33 +11,30 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
-@Data
+@Table(name = "transaction")
+@Getter
+@Setter
 public class Transaction {
 
     @Id
-    private String id;
+    @Column(length = 36)
+    private String id = UUID.randomUUID().toString();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY) // Transaction belongs to Account
     @JoinColumn(name = "account_id", nullable = false)
     @JsonBackReference
-    private Account account;  // link to Account entity
+    private Account account;
 
-    @NotBlank
-    private String type; // DEBIT / CREDIT
+    @Column(nullable = false, length = 10)
+    private String type; // CREDIT / DEBIT
 
-    @NotNull
-    @Positive(message = "Amount must be positive")
+    @Column(nullable = false, precision = 18, scale = 2)
     private BigDecimal amount;
 
-    private String status = "SUCCESS";
+    private String status;
 
     private String narration;
 
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    public void prePersist() {
-        if (this.id == null) this.id = UUID.randomUUID().toString();
-        if (this.createdAt == null) this.createdAt = LocalDateTime.now();
-    }
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

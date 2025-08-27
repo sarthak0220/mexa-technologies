@@ -11,48 +11,36 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
-
 @Service
 public class TransactionService {
 
-    private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
+    private final TransactionRepository transactionRepository;
     private final UserRepository userRepository;
 
-    public TransactionService(TransactionRepository transactionRepository,
-                              AccountRepository accountRepository,
+    public TransactionService(AccountRepository accountRepository,
+                              TransactionRepository transactionRepository,
                               UserRepository userRepository) {
-        this.transactionRepository = transactionRepository;
         this.accountRepository = accountRepository;
+        this.transactionRepository = transactionRepository;
         this.userRepository = userRepository;
     }
 
-    @Transactional
     public Transaction makeTransaction(String accountId, Transaction txn, String username) {
-        Account acc = accountRepository.findById(accountId)
+        // Find logged-in user
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Ensure the account belongs to this user
+        Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
 
-        // Check ownership
-        if (!acc.getUser().getUsername().equals(username)) {
-            throw new AccessDeniedException("You cannot operate on this account");
+        if (!account.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException("You are not the owner of this account");
         }
 
-        // Perform transaction
-        if ("DEBIT".equalsIgnoreCase(txn.getType())) {
-            if (acc.getBalance().compareTo(txn.getAmount()) < 0) {
-                throw new RuntimeException("Insufficient balance");
-            }
-            acc.setBalance(acc.getBalance().subtract(txn.getAmount()));
-        } else if ("CREDIT".equalsIgnoreCase(txn.getType())) {
-            acc.setBalance(acc.getBalance().add(txn.getAmount()));
-        } else {
-            throw new RuntimeException("Invalid transaction type");
-        }
-
-        accountRepository.save(acc);
-
-        txn.setId(UUID.randomUUID().toString());
-        txn.setAccount(acc);
+        // Set the account and save txn
+        txn.setAccount(account);
         return transactionRepository.save(txn);
     }
 }

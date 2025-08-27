@@ -1,4 +1,5 @@
 package com.banking.onlinebanking.model;
+import java.util.ArrayList;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -22,7 +23,7 @@ public class Account {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     @JsonBackReference
-    @JsonIgnore
+    // @JsonIgnore
     private User user; // link to User entity
 
     @NotBlank(message = "Currency cannot be blank")
@@ -40,9 +41,9 @@ public class Account {
     @Version
     private int version;
 
-    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonManagedReference
-    private List<Transaction> transactions;
+    private List<Transaction> transactions=new ArrayList<>();
 
     @PrePersist
     public void prePersist() {
