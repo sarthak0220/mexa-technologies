@@ -3,12 +3,18 @@ package com.banking.onlinebanking.controller;
 import com.banking.onlinebanking.model.User;
 import com.banking.onlinebanking.security.JwtUtil;
 import com.banking.onlinebanking.service.UserService;
+
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AuthController {
 
      @GetMapping("/hello")
@@ -31,12 +37,19 @@ public class AuthController {
         return userService.register(user);
     }
 
-    @PostMapping("/login")
-    public String login(@RequestBody User user) {
+ @PostMapping("/login")
+public ResponseEntity<?> login(@RequestBody User user) {
+    try {
         authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
+            new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
         );
-        UserDetails userDetails = userService.loadUserByUsername(user.getUsername());
-        return jwtUtil.generateToken(userDetails.getUsername());
+    } catch (Exception e) {
+        // Invalid username or password
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                             .body(Map.of("error", "Invalid credentials"));
     }
+
+    String token = jwtUtil.generateToken(user.getUsername());
+    return ResponseEntity.ok(Map.of("token", token));
+}
 }

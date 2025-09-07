@@ -7,6 +7,7 @@ import com.banking.onlinebanking.repository.AccountRepository;
 import com.banking.onlinebanking.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -39,4 +40,11 @@ public class AccountService {
         return accountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
     }
+    // src/main/java/com/banking/onlinebanking/service/AccountService.java (add this)
+public List<Account> getAccountsForUser(String username) {
+    User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+    return accountRepository.findByUser(user);
+}
+
 }

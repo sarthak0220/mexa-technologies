@@ -8,9 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/accounts")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AccountController {
 
     private final AccountService accountService;
@@ -18,6 +20,7 @@ public class AccountController {
     public AccountController(AccountService accountService) {
         this.accountService = accountService;
     }
+    
 
     // Create account using AccountRequest and JWT user
     @PostMapping
@@ -26,6 +29,10 @@ public class AccountController {
         // principal.getName() will return the username from JWT
         Account account = accountService.createAccount(request, principal.getName());
         return ResponseEntity.ok(account);
+    }
+      @GetMapping
+    public List<Account> listMyAccounts(Principal principal) {
+        return accountService.getAccountsForUser(principal.getName());
     }
 
     @GetMapping("/{id}")

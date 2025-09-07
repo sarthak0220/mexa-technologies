@@ -1,9 +1,11 @@
 package com.banking.onlinebanking.config;
 
 import com.banking.onlinebanking.security.JwtFilter;
+
 import com.banking.onlinebanking.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,6 +14,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class SecurityConfig {
@@ -21,6 +25,20 @@ public class SecurityConfig {
     public SecurityConfig(UserService userService) {
         this.userService = userService;
     }
+
+
+    
+
+    @Bean
+public WebMvcConfigurer corsConfigurer() {
+    return new WebMvcConfigurer() {
+        @Override
+        public void addCorsMappings(CorsRegistry registry) {
+            registry.addMapping("/**").allowedOrigins("*").allowedMethods("*");
+        }
+    };
+}
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -36,16 +54,26 @@ public class SecurityConfig {
         return authBuilder.build();
     }
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll() // allow register/login
-                .anyRequest().authenticated()
-            )
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+@Bean
+public SecurityFilterChain filterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
+    http.csrf(csrf -> csrf.disable())
+        .cors(cors -> {}) // enable CORS from the WebMvcConfigurer above
+        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/auth/**", "/actuator/**").permitAll() // open endpoints
+            .requestMatchers(HttpMethod.GET, "/api/accounts/**").authenticated()
+            .requestMatchers(HttpMethod.POST, "/api/accounts").authenticated() // POST accounts must be logged in
+             .requestMatchers(HttpMethod.GET, "/api/transactions/**").authenticated()
+             .requestMatchers("/api/transactions/**").authenticated()
+             .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+            .anyRequest().authenticated()
+        );
+          
 
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+    // Add JWT filter before UsernamePasswordAuthenticationFilter
+    http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+    return http.build();
+}
+
 }

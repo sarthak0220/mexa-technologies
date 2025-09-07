@@ -6,9 +6,11 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/transactions")
+@CrossOrigin(origins = "http://localhost:5173")
 public class TransactionController {
 
     private final TransactionService transactionService;
@@ -25,6 +27,12 @@ public class TransactionController {
         // Pass the username from JWT to service
         return transactionService.makeTransaction(accountId, txn, principal.getName());
     }
+
+       @GetMapping("/{accountId}")
+public List<Transaction> getTransactions(@PathVariable String accountId, Principal principal) {
+    return transactionService.getTransactionsForAccount(accountId, principal.getName());
+}
+    
 
     // // Optional: Get all transactions for an account (owned by the logged-in user)
     // @GetMapping("/{accountId}")
