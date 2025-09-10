@@ -15,14 +15,16 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // Use @Lazy to break circular dependency with SecurityConfig
     public UserService(UserRepository userRepository, @Lazy PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
+    // For manual registration (non-OAuth2)
     public User register(User user) {
-        user.setId(UUID.randomUUID().toString());
+        user.setId(UUID.randomUUID().toString()); // local UUID
+        user.setProvider("local");
+        user.setProviderId(user.getId());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }

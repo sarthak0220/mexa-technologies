@@ -1,5 +1,20 @@
 const apiBase = 'http://localhost:8080/api';
 
+// ----- HANDLE GOOGLE OAUTH REDIRECT -----
+(function handleGoogleOAuth() {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get("token");
+  if (token) {
+    localStorage.setItem("token", token);
+    // remove token from URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+    // if user is on login page, move to accounts
+    if (window.location.pathname.endsWith("index.html") || window.location.pathname === "/") {
+      window.location.href = "accounts.html";
+    }
+  }
+})();
+
 // ----- LOGIN -----
 document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -27,7 +42,7 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
 });
 
 // ----- GOOGLE LOGIN -----
-document.getElementById('googleLogin')?.addEventListener('click', () => {
+document.getElementById('googleLoginBtn')?.addEventListener('click', () => {
   window.location.href = 'http://localhost:8080/oauth2/authorization/google';
 });
 
@@ -75,7 +90,7 @@ async function loadAccounts() {
     if (destSelect) destSelect.innerHTML = '';
 
     accounts.forEach(acc => {
-      // Table row (only if table exists)
+      // Table row
       if (tbody) {
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -88,7 +103,7 @@ async function loadAccounts() {
         tbody.appendChild(row);
       }
 
-      // Populate selects (only if they exist on this page)
+      // Populate selects
       if (sourceSelect) {
         const option1 = document.createElement('option');
         option1.value = acc.id;
@@ -186,7 +201,6 @@ document.getElementById('logoutBtn')?.addEventListener('click', () => {
 // ----- INITIALIZE -----
 window.addEventListener('DOMContentLoaded', () => {
   loadAccounts();
-
   document.getElementById('sourceAccount')?.addEventListener('change', (e) => {
     loadTransactions(e.target.value);
   });

@@ -13,16 +13,18 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Table(name = "users")
 public class User {
     @Id
-    private String id;
+    private String id; // can be UUID (manual signup) or provider "sub" (OAuth2 signup)
 
     @NotBlank
     @Column(unique = true)
-    private String username;
+    private String username; // use email as username for OAuth2
 
-    @NotBlank
     private String password;
 
     private String role = "USER";
+
+    private String provider;   // e.g., "google", "local"
+    private String providerId; // e.g., Google "sub" or UUID for local
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference

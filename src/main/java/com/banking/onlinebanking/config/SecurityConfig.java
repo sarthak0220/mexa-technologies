@@ -1,7 +1,7 @@
 package com.banking.onlinebanking.config;
 
 import com.banking.onlinebanking.security.JwtFilter;
-
+import com.banking.onlinebanking.security.OAuth2LoginSuccessHandler;
 import com.banking.onlinebanking.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,26 +54,28 @@ public WebMvcConfigurer corsConfigurer() {
         return authBuilder.build();
     }
 
-@Bean
-public SecurityFilterChain filterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
+    @Bean
+public SecurityFilterChain filterChain(HttpSecurity http, JwtFilter jwtFilter,
+                                       OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) throws Exception {
     http.csrf(csrf -> csrf.disable())
         .cors(cors -> {}) // enable CORS from the WebMvcConfigurer above
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/auth/**", "/actuator/**").permitAll() // open endpoints
+            .requestMatchers("/api/auth/**", "/actuator/**").permitAll()
             .requestMatchers(HttpMethod.GET, "/api/accounts/**").authenticated()
-            .requestMatchers(HttpMethod.POST, "/api/accounts").authenticated() // POST accounts must be logged in
-             .requestMatchers(HttpMethod.GET, "/api/transactions/**").authenticated()
-             .requestMatchers("/api/transactions/**").authenticated()
-             .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
+            .requestMatchers(HttpMethod.POST, "/api/accounts").authenticated()
+            .requestMatchers(HttpMethod.GET, "/api/transactions/**").authenticated()
+            .requestMatchers("/api/transactions/**").authenticated()
+            .requestMatchers("/oauth2/**", "/login/oauth2/**").permitAll()
             .anyRequest().authenticated()
-        );
-          
+        )
+        .oauth2Login(oauth -> oauth.successHandler(oAuth2LoginSuccessHandler)); // <-- semicolon here
 
     // Add JWT filter before UsernamePasswordAuthenticationFilter
     http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
 }
+
 
 }

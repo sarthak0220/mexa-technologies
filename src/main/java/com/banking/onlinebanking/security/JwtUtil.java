@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtUtil {
@@ -22,8 +24,13 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    public String generateToken(String username) {
+    // ---- generate token with role claim ----
+    public String generateToken(String username, String role) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role);
+
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
@@ -31,13 +38,17 @@ public class JwtUtil {
                 .compact();
     }
 
+    // keep your old method for compatibility
+    public String generateToken(String username) {
+        return generateToken(username, "USER");
+    }
+
     public String extractUsername(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        return extractAllClaims(token).getSubject();
+    }
+
+    public String extractRole(String token) {
+        return (String) extractAllClaims(token).get("role");
     }
 
     public boolean validateToken(String token, UserDetails userDetails) {
@@ -46,12 +57,15 @@ public class JwtUtil {
     }
 
     private boolean isTokenExpired(String token) {
-        Date expiration = Jwts.parserBuilder()
+        Date expiration = extractAllClaims(token).getExpiration();
+        return expiration.before(new Date());
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
                 .parseClaimsJws(token)
-                .getBody()
-                .getExpiration();
-        return expiration.before(new Date());
+                .getBody();
     }
 }
