@@ -31,7 +31,12 @@ document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
     const data = await res.json();
     if (res.ok) {
       localStorage.setItem('token', data.token);
-      window.location.href = 'accounts.html';
+      // Check role from response and redirect accordingly
+      if (data.role === 'ADMIN') {
+        window.location.href = 'admin.html';
+      } else {
+        window.location.href = 'accounts.html';
+      }
     } else {
       alert(data.error || 'Invalid credentials');
     }
@@ -200,8 +205,10 @@ document.getElementById('logoutBtn')?.addEventListener('click', () => {
 
 // ----- INITIALIZE -----
 window.addEventListener('DOMContentLoaded', () => {
-  loadAccounts();
-  document.getElementById('sourceAccount')?.addEventListener('change', (e) => {
-    loadTransactions(e.target.value);
-  });
+  if (window.location.pathname.endsWith("accounts.html")) {
+    loadAccounts();
+    document.getElementById('sourceAccount')?.addEventListener('change', (e) => {
+      loadTransactions(e.target.value);
+    });
+  }
 });

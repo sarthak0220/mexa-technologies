@@ -44,12 +44,21 @@ public ResponseEntity<?> login(@RequestBody User user) {
             new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
         );
     } catch (Exception e) {
-        // Invalid username or password
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                              .body(Map.of("error", "Invalid credentials"));
     }
 
     String token = jwtUtil.generateToken(user.getUsername());
-    return ResponseEntity.ok(Map.of("token", token));
+
+    // Fetch the user from DB to get the role
+    User dbUser = userService.findByUsername(user.getUsername())
+                             .orElseThrow(() -> new RuntimeException("User not found"));
+
+    // Return both token and role
+    return ResponseEntity.ok(Map.of(
+        "token", token,
+        "role", dbUser.getRole()
+    ));
 }
+
 }

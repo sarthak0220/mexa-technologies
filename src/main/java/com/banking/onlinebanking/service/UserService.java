@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -29,13 +30,19 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+    // add this inside UserService
+public Optional<User> findByUsername(String username) {
+    return userRepository.findByUsername(username);
+}
+
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
-                .password(user.getPassword())
+                .password(user.getPassword() == null ? "" : user.getPassword())
                 .roles(user.getRole())
                 .build();
     }

@@ -5,7 +5,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Online Banking - Login</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+#googleLoginBtn {
+  display: flex;                /* full-width flex */
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  width: 100%;                  /* span full width like .btn.w-100 */
+  padding: 10px 18px;
+  margin-top: 10px;             /* space between login and google button */
+
+  border: 1px solid #dadce0;
+  border-radius: 4px;
+  background-color: #fff;
+
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #3c4043;
+  letter-spacing: 0.25px;
+
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+
+/* Google “G” icon (SVG background) */
+#googleLoginBtn::before {
+  content: "";
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  background: url("https://developers.google.com/identity/images/g-logo.png") no-repeat center/contain;
+}
+
+/* Hover & active states */
+#googleLoginBtn:hover {
+  background-color: #f7f8f8;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+#googleLoginBtn:active {
+  background-color: #eee;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+}
+
+/* Keyboard accessibility */
+#googleLoginBtn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(66,133,244,0.3);
+}
+
+/* Responsive tweaks */
+@media (max-width: 480px) {
+  #googleLoginBtn {
+    font-size: 13px;
+    padding: 8px 14px;
+  }
+  #googleLoginBtn::before {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+  </style>
 </head>
+
 <body class="bg-light">
 
   

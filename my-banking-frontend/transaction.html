@@ -1,69 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Make Transaction</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8"> <!-- metadata -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- responsive -->
+  <title>Make Transaction</title> <!-- title -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> <!-- Bootstrap -->
+  <link href="css/transaction.css" rel="stylesheet"> <!-- page styles -->
 </head>
 <body class="bg-light">
 
-<div class="container mt-5">
-  <h2 class="mb-4">Make Transaction</h2>
-
-  <form id="transactionForm" class="mb-4">
-    <div class="mb-3">
-      <label for="sourceAccount" class="form-label">Source Account</label>
-      <select id="sourceAccount" class="form-select" required></select>
+  <header class="fx-header py-3">
+    <div class="container d-flex align-items-center justify-content-between">
+      <h1 class="h5 mb-0 fx-title">Make Transaction</h1>
+      <a href="accounts.html" class="btn btn-outline-secondary d-none d-sm-inline-flex">Back to Accounts</a>
     </div>
+  </header>
 
-    <div class="mb-3">
-      <label for="type" class="form-label">Transaction Type</label>
-      <select id="type" class="form-select" required>
-        <option value="DEBIT">Debit</option>
-        <option value="CREDIT">Credit</option>
-      </select>
-    </div>
+  <main class="container my-4 my-lg-5">
+    <!-- Transaction form card -->
+    <section class="fx-card p-3 p-md-4 mb-4">
+      <form id="transactionForm" class="row g-3">
+        <!-- Source -->
+        <div class="col-12 col-md-6">
+          <label for="sourceAccount" class="form-label">Source Account</label>
+          <div class="input-group">
+            <span class="input-group-text">From</span>
+            <select id="sourceAccount" class="form-select" required></select>
+          </div>
+        </div>
 
-    <div id="destinationDiv" class="mb-3" style="display:none;">
-      <label for="destinationAccount" class="form-label">Destination Account</label>
-      <select id="destinationAccount" class="form-select"></select>
-      <div class="form-check mt-2">
-        <input type="checkbox" class="form-check-input" id="cashWithdraw">
-        <label class="form-check-label" for="cashWithdraw">Cash Withdraw</label>
+        <!-- Type -->
+        <div class="col-12 col-md-6">
+          <label for="type" class="form-label">Transaction Type</label>
+          <div class="input-group">
+            <span class="input-group-text">Type</span>
+            <select id="type" class="form-select" required>
+              <option value="DEBIT">Debit</option>
+              <option value="CREDIT">Credit</option>
+            </select>
+          </div>
+          <div class="form-text">Debit: outflow; Credit: inflow.</div>
+        </div>
+
+        <!-- Destination block (auto hidden for CREDIT or cash withdraw) -->
+        <div class="col-12" id="destinationDiv" style="display:none;">
+          <div class="row g-3 align-items-end">
+            <div class="col-12 col-md-8">
+              <label for="destinationAccount" class="form-label">Destination Account</label>
+              <div class="input-group">
+                <span class="input-group-text">To</span>
+                <select id="destinationAccount" class="form-select"></select>
+              </div>
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="form-check mt-1">
+                <input type="checkbox" class="form-check-input" id="cashWithdraw">
+                <label class="form-check-label" for="cashWithdraw">Cash Withdraw</label>
+              </div>
+              <div class="form-text">Enable for cash withdrawal instead of transfer.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Amount -->
+        <div class="col-12 col-md-6">
+          <label for="amount" class="form-label">Amount</label>
+          <div class="input-group">
+            <span class="input-group-text">₹</span>
+            <input type="number" id="amount" class="form-control" min="0" step="0.01" required>
+          </div>
+        </div>
+
+        <!-- Narration -->
+        <div class="col-12 col-md-6">
+          <label for="narration" class="form-label">Narration</label>
+          <input type="text" id="narration" class="form-control" placeholder="Note (optional)">
+        </div>
+
+        <!-- Actions -->
+        <div class="col-12 d-flex gap-2">
+          <button type="submit" class="btn btn-primary">Submit</button>
+          <button type="reset" class="btn btn-outline-secondary">Reset</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Transactions table card -->
+    <section class="fx-card p-3 p-md-4">
+      <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+        <h2 class="h6 mb-0">Your Transactions</h2>
+        <div class="input-group input-group-sm" style="max-width: 260px;">
+          <span class="input-group-text">Search</span>
+          <input type="search" id="txnSearch" class="form-control" placeholder="type, status, narration">
+        </div>
       </div>
-    </div>
 
-    <div class="mb-3">
-      <label for="amount" class="form-label">Amount</label>
-      <input type="number" id="amount" class="form-control" min="0" step="0.01" required>
-    </div>
+      <div class="table-responsive"> <!-- responsive wrapper -->
+        <table class="table table-hover align-middle mb-0" id="transactionsTable">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Type</th>
+              <th class="text-end">Amount</th>
+              <th>Status</th>
+              <th>Narration</th>
+              <th>Created At</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
 
-    <div class="mb-3">
-      <label for="narration" class="form-label">Narration</label>
-      <input type="text" id="narration" class="form-control">
-    </div>
-
-    <button type="submit" class="btn btn-primary">Submit</button>
-  </form>
-
-  <h3>Your Transactions</h3>
-  <table class="table table-striped" id="transactionsTable">
-    <thead>
-      <tr>
-        <th>ID</th>
-      
-        <th>Type</th>
-        <th>Amount</th>
-        <th>Status</th>
-        <th>Narration</th>
-        <th>Created At</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
-
-<script src="js/transaction.js"></script>
+  <script src="js/transaction.js"></script> <!-- logic -->
 </body>
 </html>
