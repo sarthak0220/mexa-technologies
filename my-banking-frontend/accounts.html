@@ -12,7 +12,10 @@
   <header class="fx-header py-3">
     <div class="container d-flex align-items-center justify-content-between">
       <h1 class="h4 mb-0 fx-title">Your Accounts</h1>
-      <a href="transaction.html" class="btn btn-primary d-none d-sm-inline-flex">Make Transaction</a>
+      <div class="d-flex align-items-center gap-2">
+        <a href="transaction.html" class="btn btn-primary d-none d-sm-inline-flex">Make Transaction</a>
+        <button id="logoutBtn" class="btn btn-outline-danger">Logout</button>
+      </div>
     </div>
   </header>
 
@@ -30,7 +33,7 @@
         </div>
       </div>
 
-      <div class="table-responsive"> <!-- responsive wrapper -->
+      <div class="table-responsive">
         <table class="table table-hover align-middle mb-0" id="accountsTable">
           <thead class="table-light">
             <tr>
@@ -84,6 +87,6 @@
     </section>
   </main>
 
-  <script src="js/accounts.js"></script> <!-- logic -->
+  <script src="js/accounts.js"></script>
 </body>
 </html>

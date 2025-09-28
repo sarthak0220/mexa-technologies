@@ -7,6 +7,13 @@ if (!token) window.location.href = "login.html";
 const tbody = document.querySelector("#accountsTable tbody");
 const acctSearch = document.getElementById("acctSearch");
 const exportCsvBtn = document.getElementById("exportCsvBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+
+// ===== Logout =====
+logoutBtn?.addEventListener("click", () => {
+  localStorage.removeItem("token"); // clear JWT
+  window.location.replace("login.html"); // redirect
+});
 
 // ===== Row renderer with chips and formatted balance =====
 function renderAccountRow(acc) {
@@ -103,10 +110,8 @@ exportCsvBtn?.addEventListener("click", () => {
 
   const csv = rows.map(row => {
     return Array.from(row.querySelectorAll("th,td")).map(cell => {
-      // Strip HTML (chips) and escape commas/quotes
       const text = cell.textContent.replace(/\s+/g, " ").trim();
-      const escaped = `"${text.replace(/"/g, '""')}"`;
-      return escaped;
+      return `"${text.replace(/"/g, '""')}"`;
     }).join(",");
   }).join("\n");
 

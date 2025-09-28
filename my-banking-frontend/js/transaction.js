@@ -146,6 +146,10 @@ document.getElementById('transactionForm').addEventListener('submit', async (e) 
 document.getElementById('sourceAccount').addEventListener('change', (e) => {
   loadTransactions(e.target.value);
 });
+document.getElementById("logoutBtn")?.addEventListener("click", () => {
+  localStorage.removeItem("token");
+  window.location.replace("login.html");
+});
 
 // ===== Init =====
 loadAccounts();

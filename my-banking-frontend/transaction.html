@@ -12,7 +12,10 @@
   <header class="fx-header py-3">
     <div class="container d-flex align-items-center justify-content-between">
       <h1 class="h5 mb-0 fx-title">Make Transaction</h1>
-      <a href="accounts.html" class="btn btn-outline-secondary d-none d-sm-inline-flex">Back to Accounts</a>
+      <div class="d-flex align-items-center gap-2">
+        <a href="accounts.html" class="btn btn-outline-secondary d-none d-sm-inline-flex">Back to Accounts</a>
+        <button id="logoutBtn" class="btn btn-outline-danger">Logout</button>
+      </div>
     </div>
   </header>
 
@@ -20,7 +23,6 @@
     <!-- Transaction form card -->
     <section class="fx-card p-3 p-md-4 mb-4">
       <form id="transactionForm" class="row g-3">
-        <!-- Source -->
         <div class="col-12 col-md-6">
           <label for="sourceAccount" class="form-label">Source Account</label>
           <div class="input-group">
@@ -29,7 +31,6 @@
           </div>
         </div>
 
-        <!-- Type -->
         <div class="col-12 col-md-6">
           <label for="type" class="form-label">Transaction Type</label>
           <div class="input-group">
@@ -42,7 +43,6 @@
           <div class="form-text">Debit: outflow; Credit: inflow.</div>
         </div>
 
-        <!-- Destination block (auto hidden for CREDIT or cash withdraw) -->
         <div class="col-12" id="destinationDiv" style="display:none;">
           <div class="row g-3 align-items-end">
             <div class="col-12 col-md-8">
@@ -62,7 +62,6 @@
           </div>
         </div>
 
-        <!-- Amount -->
         <div class="col-12 col-md-6">
           <label for="amount" class="form-label">Amount</label>
           <div class="input-group">
@@ -71,13 +70,11 @@
           </div>
         </div>
 
-        <!-- Narration -->
         <div class="col-12 col-md-6">
           <label for="narration" class="form-label">Narration</label>
           <input type="text" id="narration" class="form-control" placeholder="Note (optional)">
         </div>
 
-        <!-- Actions -->
         <div class="col-12 d-flex gap-2">
           <button type="submit" class="btn btn-primary">Submit</button>
           <button type="reset" class="btn btn-outline-secondary">Reset</button>
@@ -95,7 +92,7 @@
         </div>
       </div>
 
-      <div class="table-responsive"> <!-- responsive wrapper -->
+      <div class="table-responsive">
         <table class="table table-hover align-middle mb-0" id="transactionsTable">
           <thead class="table-light">
             <tr>
@@ -107,12 +104,12 @@
               <th>Created At</th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody><!-- filled by JS --></tbody>
         </table>
       </div>
     </section>
   </main>
 
-  <script src="js/transaction.js"></script> <!-- logic -->
+  <script src="js/transaction.js"></script>
 </body>
 </html>
